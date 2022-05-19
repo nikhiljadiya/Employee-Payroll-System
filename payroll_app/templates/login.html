@@ -1,0 +1,87 @@
+{% extends "includes/base-simple.html" %}
+{% load static %}
+
+<title>{% block title %}Employee Payroll System :: Login{% endblock %}</title>
+
+{% block content %}
+<body class="login-container">
+
+<!-- Main navbar -->
+<!-- /main navbar -->
+
+<!-- Page container -->
+<div class="page-container">
+
+    <!-- Page content -->
+    <div class="page-content">
+
+        <!-- Main content -->
+        <div class="content-wrapper">
+
+            <!-- Content area -->
+            <div class="content">
+
+                <!-- Simple login form -->
+                <form action="{% url 'login' %}" method="post">
+                    {% csrf_token %}
+                    <div class="panel panel-body login-form">
+                        <div class="text-center">
+                            <img src="{% static 'assets/images/logo.png' %}" style="width: 150px;" alt="Employee Payroll System">
+                            <!--<div class="icon-object border-slate-300 text-slate-300">
+                                <i class="icon-reading"></i>
+                            </div>-->
+                            <h5 class="content-group">Login to your account
+                                <small class="display-block">Enter your credentials below</small>
+                            </h5>
+                        </div>
+
+                        <div class="form-group has-feedback has-feedback-left">
+                            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required="required" autocomplete="off">
+
+                            <div class="form-control-feedback">
+                                <i class="icon-user text-muted"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback has-feedback-left">
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required="required" autocomplete="off">
+
+                            <div class="form-control-feedback">
+                                <i class="icon-lock2 text-muted"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block">Sign in
+                                <i class="icon-circle-right2 position-right"></i></button>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="/forgot_password">Forgot password?</a>
+                        </div>
+                    </div>
+                </form>
+                <!-- /simple login form -->
+
+
+                <!-- Footer -->
+                <div class="footer text-muted text-center">
+                    &copy; {% now 'Y' %}. <a href="/">Employee Payroll System</a> by
+                    <a href="/" target="_blank">Jadiya Nikhil</a>
+                </div>
+                <!-- /footer -->
+
+            </div>
+            <!-- /content area -->
+
+        </div>
+        <!-- /main content -->
+
+    </div>
+    <!-- /page content -->
+
+</div>
+<!-- /page container -->
+
+</body>
+{% endblock %}

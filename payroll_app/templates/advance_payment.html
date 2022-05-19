@@ -1,0 +1,200 @@
+{% extends "includes/base.html" %}{% load mathfilters %}{% load humanize %}<title>{% block title %}Employee Payroll System ::
+    Advance Payment{% endblock %}</title>
+
+{% block content %}
+
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+        });
+    </script>
+
+    <!-- Main content -->
+    <div class="content-wrapper">
+
+        <!-- Page header -->
+        <div class="page-header page-header-default">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Home</span> - Advance Payment</h4>
+                </div>
+
+                <!--<div class="heading-elements">
+                    <div class="heading-btn-group">
+                        <a href="#" class="btn btn-link btn-float has-text"><i class="icon-bars-alt text-primary"></i><span>Statistics</span></a>
+                    </div>
+                </div> -->
+            </div>
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-line">
+                <ul class="breadcrumb">
+                    <li><a href="/"><i class="icon-home2 position-left"></i> Home</a></li>
+                    <li>Main Menu</li>
+                    <li class="active">Advance Payment</li>
+                </ul>
+            </div>
+            <!-- Breadcrumb -->
+
+        </div>
+        <!-- /page header -->
+
+        <!-- Content area -->
+        <div class="content">
+            <form class="form-horizontal" {% url 'advance_payment' %} method="post">
+                {% csrf_token %} <input type="hidden" name="hfAttendanceId" id="hfAttendanceId" value="">
+
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        {% if request.session.message %}
+                            <div class="alert alert-success no-border">
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <span>&times;</span><span class="sr-only">Close</span></button>
+                                <span class="text-semibold">Success!</span> {{ request.session.message }}
+                            </div>
+                        {% endif %}
+
+                        <div class="panel panel-flat">
+                            <div class="panel-heading">
+                                <h6 class="panel-title">Manage Advance Payment</h6>
+                            </div>
+
+                            <div class="panel-body">
+                                <fieldset class="content-group">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Employee : </label>
+
+                                        <div class="col-lg-4">
+                                            <select class="select-search" name="cmbEmployee" id="cmbEmployee" required
+                                                    {% if readonly == 1 %} disabled {% endif %}>
+                                                <option value="">Select Employee</option>
+                                                {% for employee in employees %}
+                                                    <option value="{{ employee.id }}"
+                                                            {% if advance_payment.employee.id == employee.id %}
+                                                            selected="selected" {% endif %}>{{ employee.firstname }} {{ employee.lastname }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Date : </label>
+
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="icon-calendar3"></i></span> <input type="text" class="form-control pickadate-accessibility" name="txtDate" id="txtDate" value="{% if advance_payment.date %} {{ advance_payment.date|date:"d/m/Y" }} {% else %} {% now "d/m/Y" %} {% endif %}" required{% if readonly == 1 %} readonly {% endif %}>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Amount : </label>
+
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">&#8377;</span> <input type="text" class="form-control" name="txtAmount" id="txtAmount" value="{{ advance_payment.amount|abs }}"
+                                                    {% if readonly == 1 %} readonly {% endif %}>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <select class="select" name="cmbAmountType" id="cmbAmountType" required {% if readonly == 1 %} disabled {% endif %}>
+                                                <option value="">&nbsp;</option>
+                                                <option value="cr" {% if advance_payment.amount < 0 %} selected="selected" {% endif %}>Cr.</option>
+                                                <option value="dr" {% if advance_payment.amount > 0 %} selected="selected" {% endif %}>Dr.</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Notes : </label>
+
+                                        <div class="col-lg-4">
+                                            <textarea name="txtNotes" id="txtNotes" rows="5" cols="5" class="form-control"{% if readonly == 1 %} readonly {% endif %}>{{ advance_payment.notes }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-lg-4">
+                                            <button type="submit" class="btn btn-success" name="btnSave">Save <i class="icon-checkmark3 position-right"></i></button></button>
+                                            <button type="reset" class="btn btn-primary pull-right" name="btnCancel">Cancel<i class="icon-cross2 position-right"></i></button>
+                                        </div>
+                                    </div>
+
+                                </fieldset>
+
+                            </div>
+
+                            <div class="panel-heading">
+                                <h6 class="panel-title">View Advance Payment</h6>
+
+                                <div class="heading-elements">
+                                    <ul class="icons-list">
+                                        <li><a data-action="collapse"></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <table class="table datatable-basic">
+                                <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Notes</th>
+                                    <th>Current Balance</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for advance_payment in all_advance_payments %}
+                                    <tr>
+                                        <td>{{ advance_payment.employee.firstname }} {{ advance_payment.employee.lastname }}</td>
+                                        <td>{{ advance_payment.date|date:"d/m/Y" }}</td>
+                                        {% if advance_payment.amount < 0 %}
+                                            <td>&#8377; {{ advance_payment.amount|abs|intcomma }} Cr</td>
+                                        {% elif advance_payment.amount > 0 %}
+                                            <td>&#8377; {{ advance_payment.amount|intcomma }} Dr</td>
+                                        {% endif %}
+                                        <td>{{ advance_payment.notes }}</td>
+                                        {% if advance_payment.employee.balance < 0 %}
+                                            <td>&#8377; {{ advance_payment.employee.balance|abs|intcomma }} Cr</td>
+                                        {% elif advance_payment.employee.balance > 0 %}
+                                            <td>&#8377; {{ advance_payment.employee.balance|intcomma }} Dr</td>
+                                        {% endif %}
+
+                                        <td class="text-center">
+                                            <ul class="icons-list">
+                                                <li class="dropdown">
+                                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"> <i class="icon-menu9"></i> </a>
+                                                    <ul class="dropdown-menu dropdown-menu-right">
+                                                        <li><a href="{% url 'advance_payment_action' 'view' advance_payment.pk %}"><i class="icon-eye4"></i> View</a></li>
+                                                        <li><a href="{% url 'advance_payment_action' 'edit' advance_payment.pk %}"><i class="icon-pencil3"></i> Edit</a></li>
+                                                        <li><a href="{% url 'advance_payment_action' 'delete' advance_payment.pk %}"><i class="icon-trash"></i> Delete</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- Footer -->
+            <div class="footer text-muted">
+                {% block footer-content %}
+                    &copy; {% now 'Y' %}. <a href="">Employee Payroll System</a> by
+                    <a href="" target="_blank">Jadiya Nikhil</a>
+                {% endblock %}
+            </div>
+            <!-- /footer -->
+
+        </div>
+        <!-- /content area -->
+
+    </div>
+    <!-- /main content -->
+{% endblock %}

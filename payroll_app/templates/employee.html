@@ -1,0 +1,215 @@
+{% extends "includes/base.html" %}{% load mathfilters %}{% load humanize %}<title>{% block title %}Employee Payroll System :: Employee{% endblock %}</title>
+
+{% block content %}
+    <!-- Main content -->
+    <div class="content-wrapper">
+
+        <!-- Page header -->
+        <div class="page-header page-header-default">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Home</span> - Employee</h4>
+                </div>
+
+                <!--<div class="heading-elements">
+                    <div class="heading-btn-group">
+                        <a href="#" class="btn btn-link btn-float has-text"><i class="icon-bars-alt text-primary"></i><span>Statistics</span></a>
+                    </div>
+                </div> -->
+            </div>
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-line">
+                <ul class="breadcrumb">
+                    <li><a href="/"><i class="icon-home2 position-left"></i> Home</a></li>
+                    <li>Main Menu</li>
+                    <li class="active">Employee</li>
+                </ul>
+            </div>
+            <!-- Breadcrumb -->
+
+        </div>
+        <!-- /page header -->
+
+        <!-- Content area -->
+        <div class="content">
+            <form class="form-horizontal" {% url 'employee' %} method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        {% if request.session.message %}
+                            <div class="alert alert-success no-border">
+                                <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Close</span></button>
+                                <span class="text-semibold">Success!</span> {{ request.session.message }}
+                            </div>
+                        {% endif %}
+
+                        <div class="panel panel-flat">
+                            <div class="panel-heading">
+                                <h6 class="panel-title">Manage Employee</h6>
+                            </div>
+
+                            <div class="panel-body">
+                                <fieldset class="content-group">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">First Name : </label>
+
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" name="txtFirstname" id="txtFirstname" value="{{ employee.firstname }}" required
+                                                    {% if readonly == 1 %} readonly {% endif %}>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Last Name : </label>
+
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" name="txtLastname" id="txtLastname" value="{{ employee.lastname }}"
+                                                    {% if readonly == 1 %} readonly {% endif %}>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Address : </label>
+
+                                        <div class="col-lg-3">
+                                                <textarea name="txtAddress" id="txtAddress" rows="5" cols="5" class="form-control" {% if readonly == 1 %}
+                                                          readonly {% endif %}>{{ employee.address }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Mobile : </label>
+
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" name="txtMobile" id="txtMobile" value="{{ employee.mobile }}" required {% if readonly == 1 %}
+                                                   readonly {% endif %}>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Phone : </label>
+
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" name="txtPhone" id="txtPhone" value="{{ employee.phone }}" {% if readonly == 1 %}
+                                                   readonly {% endif %}>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Salary (Per Day) : </label>
+
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">&#8377;</span> <input type="text" class="form-control" name="txtSalary" id="txtSalary" value="{{ employee.salary_per_day }}"
+                                                    {% if readonly == 1 %} readonly {% endif %}>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Account Balance : </label>
+
+                                        <div class="col-lg-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">&#8377;</span> <input type="text" class="form-control" name="txtBalance" id="txtBalance" value="{{ employee.balance|abs }}"
+                                                    {% if readonly == 1 %} readonly {% endif %}>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <select class="select" name="cmbBalanceType" id="cmbBalanceType" required {% if readonly == 1 %} disabled {% endif %}>
+                                                <option value="">&nbsp;</option>
+                                                <option value="cr" {% if employee.balance < 0 %}
+                                                        selected="selected" {% endif %}>Cr.
+                                                </option>
+                                                <option value="dr" {% if employee.balance > 0 %}
+                                                        selected="selected" {% endif %}>Dr.
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-lg-4">
+                                            <button type="submit" class="btn btn-success" name="btnSave">Save <i class="icon-checkmark3 position-right"></i></button>
+                                            <button type="reset" class="btn btn-primary pull-right" name="btnCancel">Cancel <i class="icon-cross2 position-right"></i></button>
+                                        </div>
+                                    </div>
+
+                                </fieldset>
+                            </div>
+
+                            <div class="panel-heading">
+                                <h6 class="panel-title">View Employee</h6>
+
+                                <div class="heading-elements">
+                                    <ul class="icons-list">
+                                        <li><a data-action="collapse"></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <table class="table datatable-basic">
+                                <thead>
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Mobile</th>
+                                    <th>Phone</th>
+                                    <th>Salary</th>
+                                    <th>Balance</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for employee in all_employees %}
+                                    <tr>
+                                        <td>{{ employee.firstname }}</td>
+                                        <td>{{ employee.lastname }}</td>
+                                        <td>{{ employee.mobile }}</td>
+                                        <td>{{ employee.phone }}</td>
+                                        <td>&#8377; {{ employee.salary_per_day|intcomma }}</td>
+                                        {% if employee.balance < 0 %}
+                                            <td>&#8377; {{ employee.balance|abs|intcomma }} Cr</td>
+                                        {% elif employee.balance > 0 %}
+                                            <td>&#8377; {{ employee.balance|intcomma }} Dr</td>
+                                        {% endif %}
+
+                                        <td class="text-center">
+                                            <ul class="icons-list">
+                                                <li class="dropdown">
+                                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"> <i class="icon-menu9"></i> </a>
+                                                    <ul class="dropdown-menu dropdown-menu-right">
+                                                        <li><a href="{% url 'employee_action' 'view' employee.pk %}"><i class="icon-eye4"></i> View</a></li>
+                                                        <li><a href="{% url 'employee_action' 'edit' employee.pk %}"><i class="icon-pencil3"></i> Edit</a></li>
+                                                        <li><a href="{% url 'employee_action' 'delete' employee.pk %}"><i class="icon-trash"></i> Delete</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+            <!-- Footer -->
+            <div class="footer text-muted">
+                {% block footer-content %}
+                    &copy; {% now 'Y' %}. <a href="">Employee Payroll System</a> by
+                    <a href="" target="_blank">Jadiya Nikhil</a>
+                {% endblock %}
+            </div>
+            <!-- /footer -->
+
+        </div>
+        <!-- /content area -->
+
+    </div>
+    <!-- /main content -->
+{% endblock %}

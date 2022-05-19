@@ -1,0 +1,142 @@
+{% extends "includes/base.html" %}
+{% load mathfilters %}
+{% load humanize %}
+<title>{% block title %}Employee Payroll System ::
+    Salary Report{% endblock %}</title>
+
+{% block content %}
+
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+
+        });
+    </script>
+
+    <!-- Main content -->
+    <div class="content-wrapper">
+
+        <!-- Page header -->
+        <div class="page-header page-header-default">
+            <div class="page-header-content">
+                <div class="page-title">
+                    <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Home</span> - Salary Report</h4>
+                </div>
+
+                <!--<div class="heading-elements">
+                    <div class="heading-btn-group">
+                        <a href="#" class="btn btn-link btn-float has-text"><i class="icon-bars-alt text-primary"></i><span>Statistics</span></a>
+                    </div>
+                </div> -->
+            </div>
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-line">
+                <ul class="breadcrumb">
+                    <li><a href="/"><i class="icon-home2 position-left"></i> Home</a></li>
+                    <li>Reports</li>
+                    <li class="active">Salary Report</li>
+                </ul>
+            </div>
+            <!-- Breadcrumb -->
+
+        </div>
+        <!-- /page header -->
+
+        <!-- Content area -->
+        <div class="content">
+            <form class="form-horizontal" {% url 'salary_report' %} method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        {% if request.session.message %}
+                            <div class="alert alert-success no-border">
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <span>&times;</span><span class="sr-only">Close</span></button>
+                                <span class="text-semibold">Success!</span> {{ request.session.message }}
+                            </div>
+                        {% endif %}
+
+                        <div class="panel panel-flat">
+                            <div class="panel-heading">
+                                <h6 class="panel-title">View Salary Report</h6>
+                            </div>
+
+                            <div class="panel-body">
+                                <fieldset class="content-group">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Employee : </label>
+
+                                        <div class="col-lg-4">
+                                            <select class="select-search" name="cmbEmployee" id="cmbEmployee" required
+                                                    {% if readonly == 1 %} disabled {% endif %}>
+                                                <option value="">Select Employee</option>
+                                                {% for employee in employees %}
+                                                    <option value="{{ employee.id }}"
+                                                            {% if attendance.employee.id == employee.id %}
+                                                            selected="selected" {% endif %}>{{ employee.firstname }} {{ employee.lastname }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group hidden" id="last_record">
+
+                                        <label class="control-label col-lg-2"></label>
+
+                                        <div class="col-lg-4" id="last_record_value">
+                                            <div class="input-group">
+                                                <label class="" id="last_record_value"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-2">Date: </label>
+
+                                        <div class="col-lg-4">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="icon-calendar3"></i></span>
+                                                <input type="text" class="form-control daterange-basic" name="txtDate" id="txtDate" value="{{ from_date|date:"d/m/Y" }} - {% now "d/m/Y" %}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-lg-4">
+                                            <button type="submit" class="btn btn-success" name="btnView" id="btnView" value="view">View<i class="icon-search4 position-right"></i></button>
+                                            <button type="reset" class="btn btn-primary pull-right" name="btnCancel">Cancel<i class="icon-cross2 position-right"></i></button>
+                                        </div>
+                                    </div>
+
+                                </fieldset>
+
+                                {% if total_salary %}
+                                    <h3 class="text-center text-blue">Total: &#8377; {{ total_salary|floatformat:0|intcomma }}</h3>
+                                {% endif %}
+                                {% if total_hours %}
+                                    <h3 class="text-center text-blue">Total Hours: {{ total_hours }}</h3>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- Footer -->
+            <div class="footer text-muted">
+                {% block footer-content %}
+                    &copy; {% now 'Y' %}. <a href="">Employee Payroll System</a> by
+                    <a href="" target="_blank">Jadiya Nikhil</a>
+                {% endblock %}
+            </div>
+            <!-- /footer -->
+
+        </div>
+        <!-- /content area -->
+
+    </div>
+    <!-- /main content -->
+{% endblock %}
